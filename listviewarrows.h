@@ -9,6 +9,7 @@ class ListViewArrows: public QListView
 public:
     ListViewArrows(QWidget* parent);
     void paintEvent(QPaintEvent* event);
+    void wheelEvent(QWheelEvent* event);
 
 private:
 };

@@ -18,6 +18,7 @@ public:
 
 private slots:
     void on_listView_entered(const QModelIndex &index);
+    void onScrolled();
 
 private:
     QStandardItemModel listSrcTree;

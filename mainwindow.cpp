@@ -8,8 +8,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
 
-
-    int rowH = 22;
+    int rowH = 20;
 
     listSrcTree.setHorizontalHeaderItem(0, new QStandardItem("Src Devices"));
     QStandardItem* rootItem = listSrcTree.invisibleRootItem();
@@ -104,6 +103,11 @@ MainWindow::~MainWindow()
 }
 
 void MainWindow::on_listView_entered(const QModelIndex &index)
+{
+
+}
+
+void MainWindow::onScrolled()
 {
 
 }

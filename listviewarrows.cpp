@@ -18,7 +18,7 @@ void ListViewArrows::paintEvent(QPaintEvent* event)
 
     //painter.fillRect(0, 0, 10, 10, Qt::BrushStyle::);
 
-    int rowH = 22;
+    int rowH = 20;
     int firstRowH = 17;
 
     int width = this->viewport()->size().width();
@@ -42,6 +42,13 @@ void ListViewArrows::paintEvent(QPaintEvent* event)
 //    float xL = ui->links->viewport()->rect().left();
 //    float xR = ui->links->viewport()->rect().right();
 
+    //note: just drawing random stuff for testing lines..
+    // only "signal"->"signal" connections make sense
+    // so in actual device--->signal shouldn't exist
+
+    //TODO: scrolling is a bit of a pain. need to subclass
+    // the two end views, and then provide drawing offsets for
+    // the lines. mapping view shouldn't scroll
 
     startY = firstRowH + 2.5 * rowH;
     endY = firstRowH + 4.5* rowH;
@@ -56,6 +63,12 @@ void ListViewArrows::paintEvent(QPaintEvent* event)
     path->cubicTo(0+width/4, startY, width*0.75, endY, width, endY);
     painter.drawPath(*path);
 
+    startY = firstRowH + 1.5 * rowH;
+    endY = firstRowH + 10.5* rowH;
+    path->moveTo(0, startY);
+    path->cubicTo(0+width/4, startY, width*0.75, endY, width, endY);
+    painter.drawPath(*path);
+
 
 
     //painter.drawRect(0,0,this->viewport()->width(), 20);
@@ -63,5 +76,9 @@ void ListViewArrows::paintEvent(QPaintEvent* event)
 
 
 
+}
+
+void ListViewArrows::wheelEvent(QWheelEvent * e)
+{
 }
 
