@@ -94,6 +94,32 @@ MainWindow::MainWindow(QWidget *parent) :
     rootItem->child(rootItem->rowCount()-1)->setSizeHint(QSize(30, rowH));
 
 
+    //try other view
+
+    QGraphicsScene *scene = new QGraphicsScene(this);
+
+
+
+    QBrush *brush = new QBrush(Qt::gray);
+    QPen *pen = new QPen(Qt::blue);
+    pen->setWidth(2);
+    //QGraphicsRectItem *rect = scene->addRect(0, 0, 100, 100, *pen, *brush);
+    ui->graphicsView->setScene(scene);
+
+    //ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    //ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    qDebug() << "gview rect = " << ui->graphicsView->rect();
+    scene->setSceneRect(ui->graphicsView->rect());
+
+    QGraphicsRectItem *rect = scene->addRect(scene->sceneRect(), *pen, *brush);
+
+    float origin_x = 0;
+    float origin_y = 0;
+
+    CustomRect * crect = new CustomRect(origin_x, origin_y, "test");
+    scene->addItem(crect);
+
+
 
 }
 

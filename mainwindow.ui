@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>568</width>
-    <height>397</height>
+    <width>733</width>
+    <height>543</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,17 +16,41 @@
   <widget class="QWidget" name="centralWidget">
    <layout class="QGridLayout" name="gridLayout">
     <item row="0" column="0">
-     <layout class="QHBoxLayout" name="horizontalLayout">
-      <item>
-       <widget class="QTreeView" name="treeView1"/>
-      </item>
-      <item>
-       <widget class="ListViewArrows" name="listViewArrows"/>
-      </item>
-      <item>
-       <widget class="QTreeView" name="treeView2"/>
-      </item>
-     </layout>
+     <widget class="QTabWidget" name="tabWidget">
+      <property name="currentIndex">
+       <number>1</number>
+      </property>
+      <widget class="QWidget" name="tab">
+       <attribute name="title">
+        <string>Tab 1</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_3">
+        <item row="0" column="0">
+         <layout class="QGridLayout" name="gridLayout_2">
+          <item row="0" column="0">
+           <widget class="QTreeView" name="treeView1"/>
+          </item>
+          <item row="0" column="1">
+           <widget class="ListViewArrows" name="listViewArrows"/>
+          </item>
+          <item row="0" column="2">
+           <widget class="QTreeView" name="treeView2"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Tab 2</string>
+       </attribute>
+       <layout class="QGridLayout" name="gridLayout_4">
+        <item row="0" column="0">
+         <widget class="QGraphicsView" name="graphicsView"/>
+        </item>
+       </layout>
+      </widget>
+     </widget>
     </item>
    </layout>
   </widget>
@@ -35,7 +59,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>568</width>
+     <width>733</width>
      <height>22</height>
     </rect>
    </property>
