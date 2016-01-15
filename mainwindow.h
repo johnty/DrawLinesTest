@@ -7,6 +7,7 @@
 #include <QGraphicsScene>
 #include <QPainter>
 #include <QDebug>
+#include "qmapperdbmodel.h"
 
 namespace Ui {
 class MainWindow;
@@ -16,15 +17,19 @@ class CustomRect : public QGraphicsItem
 {
 public:
 
-    CustomRect(float x, float y, QString title) {
-        mytext = title;
+    CustomRect(float x, float y, QString dev, QString sig) {
+        devname = dev;
+        signame = sig;
         originX = x;
         originY = y;
         setPos(originX, originY);
         setFlags(flags() | ItemIsMovable | ItemSendsGeometryChanges);
     }
 
-    void setTitle(QString text) { mytext = text; }
+    void setTitles(QString dev, QString sig) {
+        devname = dev;
+        signame = sig;
+    }
 
     QRectF boundingRect() const {
         return QRectF(0, 0, 120, 30);
@@ -43,9 +48,9 @@ public:
         painter->fillRect(rect,brush);
         painter->drawRect(rect);
 
-
         painter->setPen(Qt::green);
-        painter->drawText(rect, mytext);
+        QString text = devname + "/" + signame;
+        painter->drawText(rect, text);
 
     }
 protected:
@@ -73,14 +78,58 @@ protected:
 
 private:
     bool pressed;
-    QString mytext;
+    QString devname;
+    QString signame;
     float originX;
     float originY;
 
 };
 
-class MapperDbScene : public QGraphicsScene
-{
+class QMapperDbScene : public QGraphicsScene
+{ // when separated, include qmappermodel.h...
+    /*
+     #include "qmapperdbmodel.h"
+     #include "customrect.h"
+     #include "
+      */
+public:
+
+    QMapperDbScene(QObject *parent) : QGraphicsScene(parent)
+    {
+        dbModel = NULL;
+    }
+
+
+    void updateScene()
+    {
+        if (dbModel != NULL)
+        {
+            clear();
+            sigs.clear();
+
+            for (int i=0; i<dbModel->getNumSigs(); ++i)
+            {
+                QString devname = dbModel->getSigDevName(i);
+                QString signame = dbModel->getSigName(i);
+                int Yoffset = i *35;
+                CustomRect * sigrect = new CustomRect(0, Yoffset, devname, signame);
+                sigs.push_back(sigrect);
+                addItem(sigrect);
+            }
+
+        }
+    }
+
+    void setMapperDbModel(QMapperDbModel* model)
+    {
+        dbModel = model;
+    }
+
+
+
+private:
+    QMapperDbModel *dbModel;
+    std::vector<CustomRect*> sigs;
 
 };
 
@@ -97,6 +146,8 @@ private slots:
     void onScrolled();
 
 private:
+    QMapperDbScene * mapperScene;
+    QMapperDbModel * dbModel;
     QStandardItemModel listSrcTree;
     QStandardItemModel listDstTree;
     QStandardItemModel listArrows;

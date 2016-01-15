@@ -21,12 +21,20 @@ public:
     //create a bunch of test devices/signals/maps
     void LoadFromTest();
 
+    int getNumSigs() {
+        return mapperSignals.size();
+    }
+
+    const QStandardItem* getSigItem(int index) {return mapperSignals.at(index);}
+    const QString getSigName(int idx);
+    const QString getSigDevName(int idx);
+
 private:
 
     //TODO: more organized data structures
     QVector<QString> mapperDevNames;
-    QVector<QStandardItem> mapperSignals;
-    QVector<QStandardItem> mapperMaps;
+    QVector<QStandardItem*> mapperSignals;
+    QVector<QStandardItem*> mapperMaps;
 };
 
 #endif // QMAPPERDBMODEL_H

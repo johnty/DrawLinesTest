@@ -96,9 +96,22 @@ MainWindow::MainWindow(QWidget *parent) :
 
     //try other view
 
+    //custom view
+
+    mapperScene = new QMapperDbScene(this);
+    dbModel = new QMapperDbModel();
+    mapperScene->setMapperDbModel(dbModel);
+    dbModel->LoadFromTest();
+    ui->graphicsView->setScene(mapperScene);
+    mapperScene->setSceneRect(ui->graphicsView->rect());
+    mapperScene->updateScene();
+
+
+
+    //end custom view
+    return;
+
     QGraphicsScene *scene = new QGraphicsScene(this);
-
-
 
     QBrush *brush = new QBrush(Qt::gray);
     QPen *pen = new QPen(Qt::blue);
@@ -111,12 +124,11 @@ MainWindow::MainWindow(QWidget *parent) :
     qDebug() << "gview rect = " << ui->graphicsView->rect();
     scene->setSceneRect(ui->graphicsView->rect());
 
-    QGraphicsRectItem *rect = scene->addRect(scene->sceneRect(), *pen, *brush);
 
     float origin_x = 0;
     float origin_y = 0;
 
-    CustomRect * crect = new CustomRect(origin_x, origin_y, "test");
+    CustomRect * crect = new CustomRect(origin_x, origin_y, "dev", "sig");
     scene->addItem(crect);
 
 
