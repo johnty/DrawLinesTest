@@ -20,7 +20,11 @@ void CustomRect::setTitles(QString dev, QString sig) {
 }
 
 QRectF CustomRect::boundingRect() const {
-    return QRectF(0, 0, 120, 30);
+    return QRectF(0, 0, MAPPER_SCENE_ITEM_W, MAPPER_SCENE_ITEM_H);
+}
+
+QRectF CustomRect::boundingRectAbs() const {
+    return QRectF(originX, originY, MAPPER_SCENE_ITEM_W, MAPPER_SCENE_ITEM_H);
 }
 
 void CustomRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget) {

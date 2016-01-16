@@ -51,12 +51,25 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
     qDebug() <<"dbScene DRAG from " << src <<" to " << dst;
     mapPtSrc = src;
 
-    //TODO: find this stupid offset!
     mapPtSrc.setY(mapPtSrc.y());
     mapPtDst = dst;
     mapPtDst.setY( mapPtDst.y() +mapPtSrc.y());
     mapPtDst.setX( mapPtDst.x() +mapPtSrc.x());
     updateMaps();
+
+    //check if we've moved over an item...
+
+    for (int i=0; i<sigs.size(); ++i)
+    {
+        QRectF dragHitRect(mapPtDst.x()-5, mapPtDst.y()-5, 10, 10);
+
+        if (dragHitRect.intersects(sigs.at(i)->boundingRectAbs()))
+        {
+            qDebug() << "hit sig # " << i;
+        }
+
+    }
+
     //updateScene();
 }
 
@@ -96,7 +109,7 @@ void QMapperDbScene::updateScene()
             }
             else
             {
-                offsetX = MAPPER_SCENE_ITEM_W*8;
+                offsetX = MAPPER_SCENE_ITEM_W*2 + MAPPER_SCENE_SPACER*2;
                 inputOffsetY += MAPPER_SCENE_ITEM_H + MAPPER_SCENE_SPACER;
                 offsetY = inputOffsetY;
             }

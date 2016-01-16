@@ -10,6 +10,9 @@
 #include <QObject>
 //#include "qmapperdbscene.h"
 
+#define MAPPER_SCENE_ITEM_H 35
+#define MAPPER_SCENE_ITEM_W 120
+#define MAPPER_SCENE_SPACER 15
 
 class CustomRect : public QObject, public QGraphicsItem
 {
@@ -22,6 +25,7 @@ public:
     void setTitles(QString dev, QString sig);
 
     QRectF boundingRect() const;
+    QRectF boundingRectAbs() const;
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 

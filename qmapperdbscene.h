@@ -8,9 +8,6 @@
 #include "qmapperdbmodel.h"
 #include "customrect.h"
 
-#define MAPPER_SCENE_ITEM_H 35
-#define MAPPER_SCENE_ITEM_W 45
-#define MAPPER_SCENE_SPACER 5
 
 class QMapperDbScene : public QGraphicsScene
 {
@@ -33,8 +30,6 @@ public Q_SLOTS:
     void mouseDropped(QPointF src_pos, QPointF drop_pos);
     void mouseDragged(QPointF pos);
     void mouseDragged(QPointF src_pos, QPointF drag_pos);
-
-
 
 private:
 
