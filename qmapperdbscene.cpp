@@ -4,7 +4,7 @@ QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent)
 {
     dbModel = NULL;
 
-    tempPath.moveTo(sceneRect().topLeft());
+    tempPath.moveTo(0,32);
     tempPath.lineTo(100, 100);
 
     tempPathItem.setPath(tempPath);
@@ -25,6 +25,7 @@ void QMapperDbScene::mouseDragged(QPointF pos)
     tempPathItem.setVisible(true);
     qDebug() <<"dbScene dragged @ " << pos;
     mapPt = pos;
+    mapPt.setY( mapPt.y()+32);
     updateMaps();
     //updateScene();
 
@@ -35,7 +36,7 @@ void QMapperDbScene::updateMaps()
 {
 
     tempPath = QPainterPath();
-    tempPath.moveTo(sceneRect().topLeft());
+    tempPath.moveTo(0,32);
     //path.cubicTo(0+5, 0, 150, 200, 200, 200);
     tempPath.lineTo(mapPt);
     tempPathItem.setPath(tempPath);
