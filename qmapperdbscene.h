@@ -8,6 +8,10 @@
 #include "qmapperdbmodel.h"
 #include "customrect.h"
 
+#define MAPPER_SCENE_ITEM_H 35
+#define MAPPER_SCENE_ITEM_W 45
+#define MAPPER_SCENE_SPACER 5
+
 class QMapperDbScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -22,9 +26,13 @@ public:
 
     void updateMaps();
 
+    //void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
+
 public Q_SLOTS:
     void mouseDropped(QPointF pos);
+    void mouseDropped(QPointF src_pos, QPointF drop_pos);
     void mouseDragged(QPointF pos);
+    void mouseDragged(QPointF src_pos, QPointF drag_pos);
 
 
 
@@ -36,7 +44,8 @@ private:
     QGraphicsPathItem tempPathItem;
     QPainterPath tempPath;
 
-    QPointF mapPt;
+    QPointF mapPtSrc;
+    QPointF mapPtDst;
 
 };
 #endif // QMAPPERDBSCENE_H

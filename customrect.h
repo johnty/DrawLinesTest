@@ -28,7 +28,9 @@ public:
 Q_SIGNALS:
 
     void mouseDragSig(QPointF pos);
+    void mouseDragSig(QPointF src_pos, QPointF drag_pos);
     void mouseDropSig(QPointF pos);
+    void mouseDropSig(QPointF src_pos, QPointF drop_pos);
     void mouseReleaseEvent(QPointF pos);
 
 protected:

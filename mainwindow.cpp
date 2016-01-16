@@ -106,7 +106,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     //mapperScene->setSceneRect(ui->graphicsView->rect());
-    mapperScene->setSceneRect(0, 0, ui->graphicsView->width(), ui->graphicsView->height());
+    //mapperScene->setSceneRect(0, 0, ui->graphicsView->width(), ui->graphicsView->height());
     mapperScene->updateScene();
     qDebug() << "gview rect = " << ui->graphicsView->rect();
 

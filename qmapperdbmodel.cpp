@@ -24,7 +24,7 @@ void QMapperDbModel::LoadFromTest()
 
     dev1name = "Synth01";
     mapperDevNames.append(dev1name);
-    for (int i=0; i<3; ++i)
+    for (int i=0; i<5; ++i)
     {
         QString signame = "signame" + QString::number(i+1);
         QStandardItem* newSig = new QStandardItem(signame);

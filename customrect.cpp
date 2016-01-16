@@ -8,10 +8,10 @@ CustomRect::CustomRect(float x, float y, QString dev, QString sig)// QMapperDbSc
     originX = x;
     originY = y;
     setPos(originX, originY);
-    setFlags(ItemSendsGeometryChanges | ItemIsMovable);
+    //setFlags(ItemSendsGeometryChanges | ItemIsMovable);
+    setFlags(ItemSendsGeometryChanges);
     pressed = false;
     lifted = false;
-    //parentScene = scene;
 }
 
 void CustomRect::setTitles(QString dev, QString sig) {
@@ -59,20 +59,21 @@ void CustomRect::mousePressEvent(QGraphicsSceneMouseEvent *e) {
         lifted = true;
 
     }
-    QGraphicsItem::mousePressEvent(e);
+    //QGraphicsItem::mousePressEvent(e);
     update();
 }
 
 void CustomRect::mouseReleaseEvent(QGraphicsSceneMouseEvent *e) {
-    qDebug() <<"mRelease";
+    qDebug() <<"customrect mRelease";
     if (e->button() == Qt::LeftButton)
     {
         if (pressed)
         {   //a release... tell parent to see if we made connection with anything...
             pressed = false;
             qDebug()<<"press = false";
-            Q_EMIT mouseDropSig(e->pos());
-            //parentScene->mouseDropped(e->pos());
+            //Q_EMIT mouseDropSig(e->pos());
+            Q_EMIT mouseDropSig(this->pos(), e->pos());
+
 
         }
     }
@@ -106,12 +107,12 @@ void CustomRect::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
 
     if (pressed) //dragging action for "map": need to tell parent to draw arrow!
     {
-        Q_EMIT mouseDragSig(e->pos());
+        //Q_EMIT mouseDragSig(e->pos());
+
+        Q_EMIT mouseDragSig(this->pos(), e->pos());
     }
 
-    //we don't use the default move behavior, otherwise
-    // it will always be left click drag to move...
-    //QGraphicsItem::mouseMoveEvent(e);
+    QGraphicsItem::mouseMoveEvent(e);
 }
 
 QVariant CustomRect::itemChange(GraphicsItemChange change, const QVariant &value) {
