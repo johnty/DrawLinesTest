@@ -103,8 +103,13 @@ MainWindow::MainWindow(QWidget *parent) :
     mapperScene->setMapperDbModel(dbModel);
     dbModel->LoadFromTest();
     ui->graphicsView->setScene(mapperScene);
+    ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+    ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     mapperScene->setSceneRect(ui->graphicsView->rect());
     mapperScene->updateScene();
+    qDebug() << "gview rect = " << ui->graphicsView->rect();
+
+    //ui->graphicsView->setMouseTracking(true);
 
 
 

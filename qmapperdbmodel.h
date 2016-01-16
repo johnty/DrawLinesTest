@@ -28,6 +28,7 @@ public:
     const QStandardItem* getSigItem(int index) {return mapperSignals.at(index);}
     const QString getSigName(int idx);
     const QString getSigDevName(int idx);
+    const bool isOutputSig(int idx);
 
 private:
 

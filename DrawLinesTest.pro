@@ -15,10 +15,14 @@ TEMPLATE = app
 SOURCES += main.cpp\
         mainwindow.cpp \
     listviewarrows.cpp \
-    qmapperdbmodel.cpp
+    qmapperdbmodel.cpp \
+    customrect.cpp \
+    qmapperdbscene.cpp
 
 HEADERS  += mainwindow.h \
     listviewarrows.h \
-    qmapperdbmodel.h
+    qmapperdbmodel.h \
+    customrect.h \
+    qmapperdbscene.h
 
 FORMS    += mainwindow.ui

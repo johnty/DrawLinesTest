@@ -17,8 +17,20 @@ void QMapperDbModel::LoadFromTest()
         QStandardItem* newSig = new QStandardItem(signame);
 
         newSig->insertRow(0, new QStandardItem(dev1name));
-        newSig->insertRow(1, new QStandardItem("props"));
+        newSig->insertRow(1, new QStandardItem("output"));
 
+        mapperSignals.append(newSig);
+    }
+
+    dev1name = "Synth01";
+    mapperDevNames.append(dev1name);
+    for (int i=0; i<3; ++i)
+    {
+        QString signame = "signame" + QString::number(i+1);
+        QStandardItem* newSig = new QStandardItem(signame);
+
+        newSig->insertRow(0, new QStandardItem(dev1name));
+        newSig->insertRow(1, new QStandardItem("input"));
 
         mapperSignals.append(newSig);
     }
@@ -36,4 +48,9 @@ const QString QMapperDbModel::getSigName(int idx)
 const QString QMapperDbModel::getSigDevName(int idx)
 {
     return mapperSignals.at(idx)->child(0)->text();
+}
+
+const bool QMapperDbModel::isOutputSig(int idx)
+{
+    return (mapperSignals.at(idx)->child(1)->text() == "output");
 }
