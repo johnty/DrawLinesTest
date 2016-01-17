@@ -27,6 +27,8 @@ public:
     QRectF boundingRect() const;
     QRectF boundingRectAbs() const;
 
+    void setHovered(bool hover) { hoverovered = hover; update();}
+
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
 Q_SIGNALS:
@@ -53,6 +55,7 @@ protected:
 private:
     bool lifted;
     bool pressed;
+    bool hoverovered;
     QString devname;
     QString signame;
     float originX;

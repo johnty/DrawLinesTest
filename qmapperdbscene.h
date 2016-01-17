@@ -26,9 +26,9 @@ public:
     //void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
 
 public Q_SLOTS:
-    void mouseDropped(QPointF pos);
+    void mouseDropped(QPointF pos); //not used any more
     void mouseDropped(QPointF src_pos, QPointF drop_pos);
-    void mouseDragged(QPointF pos);
+    void mouseDragged(QPointF pos); //not used any more
     void mouseDragged(QPointF src_pos, QPointF drag_pos);
 
 private:

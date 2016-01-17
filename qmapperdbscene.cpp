@@ -10,6 +10,7 @@ QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent)
     tempPathItem.setPath(tempPath);
     tempPathItem.setPen(QPen(Qt::red, 2));
     tempPathItem.setBrush(QBrush(Qt::red));
+    tempPathItem.setVisible(false);
     addItem(&tempPathItem);
 
 
@@ -39,6 +40,11 @@ void QMapperDbScene::mouseDragged(QPointF pos)
 void QMapperDbScene::mouseDropped(QPointF src, QPointF dst)
 {
     qDebug() <<"dbScene DROP from " << src <<" to " << dst;
+    for (int i=0; i<sigs.size(); ++i)
+    {
+        sigs.at(i)->setHovered(false);
+    }
+    tempPathItem.setVisible(false);
 
 
 }
@@ -49,15 +55,23 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
 
     tempPathItem.setVisible(true);
     qDebug() <<"dbScene DRAG from " << src <<" to " << dst;
+
+
+    //first, get the location of where we should be drawing
     mapPtSrc = src;
+
+    mapPtSrc.setX(mapPtSrc.x()+MAPPER_SCENE_ITEM_W);
+    mapPtSrc.setY(mapPtSrc.y()+MAPPER_SCENE_ITEM_H/2);
 
     mapPtSrc.setY(mapPtSrc.y());
     mapPtDst = dst;
-    mapPtDst.setY( mapPtDst.y() +mapPtSrc.y());
-    mapPtDst.setX( mapPtDst.x() +mapPtSrc.x());
-    updateMaps();
+    mapPtDst.setY( mapPtDst.y() +src.y());
+    mapPtDst.setX( mapPtDst.x() +src.x());
 
-    //check if we've moved over an item...
+
+    //second, check if we've moved over an item...
+
+    int hoverIdx = - 1;
 
     for (int i=0; i<sigs.size(); ++i)
     {
@@ -66,9 +80,33 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
         if (dragHitRect.intersects(sigs.at(i)->boundingRectAbs()))
         {
             qDebug() << "hit sig # " << i;
+            hoverIdx = i;
+
         }
 
     }
+    for (int i=0; i<sigs.size(); ++i)
+    {
+        if (i == hoverIdx)
+        {
+            sigs.at(i)->setHovered(true);
+        }
+        else
+        {
+            sigs.at(i)->setHovered(false);
+        }
+    }
+
+    //third, make end of temporary arrow at the centre of receiving object
+    //  (if available)
+    if (hoverIdx != -1)
+    {
+        mapPtDst.setX(sigs.at(hoverIdx)->boundingRectAbs().left());
+        mapPtDst.setY(sigs.at(hoverIdx)->boundingRectAbs().top() + MAPPER_SCENE_ITEM_H/2);
+    }
+
+    //draw map path
+    updateMaps();
 
     //updateScene();
 }

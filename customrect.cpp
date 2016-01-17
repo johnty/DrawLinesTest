@@ -12,6 +12,7 @@ CustomRect::CustomRect(float x, float y, QString dev, QString sig)// QMapperDbSc
     setFlags(ItemSendsGeometryChanges);
     pressed = false;
     lifted = false;
+    hoverovered = false;
 }
 
 void CustomRect::setTitles(QString dev, QString sig) {
@@ -34,6 +35,8 @@ void CustomRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QBrush brush (Qt::blue);
     if (pressed)
         pen.setColor(Qt::red);
+    else if (hoverovered)
+        pen.setColor(Qt::green);
     else
         pen.setColor(Qt::black);
     painter->setPen(pen);
