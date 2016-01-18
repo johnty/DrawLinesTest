@@ -8,6 +8,8 @@
 #include "qmapperdbmodel.h"
 #include "customrect.h"
 
+#define MAPPER_SCENE_CURVE  25
+
 
 class QMapperDbScene : public QGraphicsScene
 {
@@ -32,6 +34,10 @@ public Q_SLOTS:
     void mouseDragged(QPointF src_pos, QPointF drag_pos);
 
 private:
+    //find index of item within square hitbox of certain length
+    int getIndexOfSigNear(QPointF pos, float len);
+
+private:
 
     QMapperDbModel *dbModel;
     std::vector<CustomRect*> sigs;
@@ -41,6 +47,9 @@ private:
 
     QPointF mapPtSrc;
     QPointF mapPtDst;
+
+    std::vector<QPointF> mapSrcs;
+    std::vector<QPointF> mapDsts;
 
 };
 #endif // QMAPPERDBSCENE_H

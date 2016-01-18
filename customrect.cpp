@@ -32,19 +32,21 @@ void CustomRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     QRectF rect = boundingRect();
     QPen pen;
     pen.setWidth(2);
-    QBrush brush (Qt::blue);
+    QBrush brush (Qt::gray);
+
+    //pen.setColor(Qt::black);
     if (pressed)
         pen.setColor(Qt::red);
-    else if (hoverovered)
+    if (hoverovered)
         pen.setColor(Qt::green);
-    else
-        pen.setColor(Qt::black);
+
     painter->setPen(pen);
     painter->fillRect(rect,brush);
     painter->drawRect(rect);
 
-    painter->setPen(Qt::green);
+    painter->setPen(Qt::black);
     QString text = devname + "/" + signame;
+    rect.moveTo(2,2);
     painter->drawText(rect, text);
 
 }

@@ -9,7 +9,7 @@ QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent)
 
     tempPathItem.setPath(tempPath);
     tempPathItem.setPen(QPen(Qt::red, 2));
-    tempPathItem.setBrush(QBrush(Qt::red));
+    //tempPathItem.setBrush(QBrush(Qt::red));
     tempPathItem.setVisible(false);
     addItem(&tempPathItem);
 
@@ -56,7 +56,6 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
     tempPathItem.setVisible(true);
     qDebug() <<"dbScene DRAG from " << src <<" to " << dst;
 
-
     //first, get the location of where we should be drawing
     mapPtSrc = src;
 
@@ -68,38 +67,37 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
     mapPtDst.setY( mapPtDst.y() +src.y());
     mapPtDst.setX( mapPtDst.x() +src.x());
 
+    //find index of source object in list
 
-    //second, check if we've moved over an item...
+    int srcIdx = getIndexOfSigNear(mapPtSrc, 10);
 
-    int hoverIdx = - 1;
+    //then, check if we've moved over an item...
 
+    int hoverIdx = getIndexOfSigNear(mapPtDst, 10);
+
+    //and if so, set it to render with selected graphic
     for (int i=0; i<sigs.size(); ++i)
     {
-        QRectF dragHitRect(mapPtDst.x()-5, mapPtDst.y()-5, 10, 10);
-
-        if (dragHitRect.intersects(sigs.at(i)->boundingRectAbs()))
-        {
-            qDebug() << "hit sig # " << i;
-            hoverIdx = i;
-
-        }
-
-    }
-    for (int i=0; i<sigs.size(); ++i)
-    {
-        if (i == hoverIdx)
+        if ((i == hoverIdx) && (srcIdx != hoverIdx))
         {
             sigs.at(i)->setHovered(true);
         }
         else
-        {
+        {   //unfortunately we have to also set everything else to
+            // non-hovered, unless we have some sort of exit
+            // mechanism, would would require a similar kind of search
+            // or better manangement of the child items.
+            // TODO: this potentially motivates the child objects (CustomRect)
+            // to hold onto an external index? this way we can simply emit
+            // the src and dst object indicies...
             sigs.at(i)->setHovered(false);
         }
     }
 
-    //third, make end of temporary arrow at the centre of receiving object
-    //  (if available)
-    if (hoverIdx != -1)
+
+    //make end of temporary arrow at the centre of receiving object
+    // if available, and make sure its not itself
+    if ( (hoverIdx != -1) && (hoverIdx != srcIdx))
     {
         mapPtDst.setX(sigs.at(hoverIdx)->boundingRectAbs().left());
         mapPtDst.setY(sigs.at(hoverIdx)->boundingRectAbs().top() + MAPPER_SCENE_ITEM_H/2);
@@ -113,11 +111,15 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
 
 void QMapperDbScene::updateMaps()
 {
+    //temporary line (while dragging)
     tempPath = QPainterPath();
     tempPath.moveTo(mapPtSrc);
-    //path.cubicTo(0+5, 0, 150, 200, 200, 200);
-    tempPath.lineTo(mapPtDst);
+    tempPath.cubicTo(mapPtSrc.x()+MAPPER_SCENE_CURVE, mapPtSrc.y(), mapPtDst.x()-MAPPER_SCENE_CURVE, mapPtDst.y(), mapPtDst.x(), mapPtDst.y());
+    //tempPath.lineTo(mapPtDst);
     tempPathItem.setPath(tempPath);
+
+
+    //maps list
 
 }
 
@@ -156,6 +158,7 @@ void QMapperDbScene::updateScene()
             QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF, QPointF)), this, SLOT(mouseDragged(QPointF, QPointF)));
             //QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF)), this, SLOT(mouseDropped(QPointF)));
             QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF, QPointF)), this, SLOT(mouseDropped(QPointF, QPointF)));
+            QObject::connect(sigrect, SIGNAL(mousePressSig()), this, SLOT(mousePressed()));
             sigs.push_back(sigrect);
             addItem(sigrect);
         }
@@ -169,4 +172,22 @@ void QMapperDbScene::updateScene()
 void QMapperDbScene::setMapperDbModel(QMapperDbModel* model)
 {
     dbModel = model;
+}
+
+int QMapperDbScene::getIndexOfSigNear(QPointF pos, float len)
+{
+    int foundIdx = -1;
+    for (int i=0; i<sigs.size(); ++i)
+    {
+        QRectF dragHitRect(pos.x()-len/2, pos.y()-len/2, len, len);
+
+        if (dragHitRect.intersects(sigs.at(i)->boundingRectAbs()))
+        {
+            qDebug() << "hit sig # " << i;
+            foundIdx = i;
+            break; //assume no overlapping boxes...
+        }
+
+    }
+    return foundIdx;
 }
