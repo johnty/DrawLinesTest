@@ -8,6 +8,12 @@ QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent)
 
 }
 
+void QMapperDbScene::mouseDoubleClicked()
+{
+    qDebug() <<"dbl";
+    updateScene();
+}
+
 //void QMapperDbScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
 //{
 //    qDebug() <<"dbscene mmove " << e->pos();
@@ -187,10 +193,9 @@ void QMapperDbScene::removeMapPaths()
     }
 }
 
-void QMapperDbScene::redrawScene()
+void QMapperDbScene::redrawMapPaths()
 {
     removeMapPaths();
-
     updateMapPaths();
 }
 
@@ -198,11 +203,25 @@ void QMapperDbScene::updateScene()
 {
     if (dbModel != NULL)
     {
-        //TODO: remove and remake signal rects!
+        qDebug() <<"reinit scene from dbModel...";
+
+        //remove stuff
+        while (sigs.size())
+        {
+            removeItem(sigs.at(sigs.size()-1));
+            delete sigs.at(sigs.size()-1);
+            sigs.pop_back();
+        }
+
+
+        removeMapPaths();
+
 
 
         removeItem(&tempPathItem);//note: find way to avoid this bit
         clear();
+
+        //add stuff back
         addItem(&tempPathItem);
         sigs.clear();
 
@@ -234,10 +253,14 @@ void QMapperDbScene::updateScene()
             QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF, QPointF)), this, SLOT(mouseDropped(QPointF, QPointF)));
             //QObject::connect(sigrect, SIGNAL(mousePressSig()), this, SLOT(mousePressed()));
             QObject::connect(sigrect, SIGNAL(rectMovedSig()), this, SLOT(devsigMoved()));
+            QObject::connect(sigrect, SIGNAL(mouseDoubleClickSig()), this, SLOT(mouseDoubleClicked()));
             sigs.push_back(sigrect);
             addItem(sigrect);
+
+            //load the map objects
         }
 
+        updateMapPaths();
         //updateMaps();
 
     }
@@ -269,5 +292,5 @@ int QMapperDbScene::getIndexOfSigNear(QPointF pos, float len)
 void QMapperDbScene::devsigMoved()
 {
     qDebug () <<" need to redraw!";
-    redrawScene();
+    redrawMapPaths();
 }

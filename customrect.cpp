@@ -53,7 +53,7 @@ void CustomRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
 
 void CustomRect::mouseDoubleClickEvent(QGraphicsSceneMouseEvent *e)
 {
-
+    Q_EMIT mouseDoubleClickSig();
 }
 
 void CustomRect::mousePressEvent(QGraphicsSceneMouseEvent *e) {

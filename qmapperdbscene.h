@@ -21,7 +21,7 @@ public:
 
     void updateScene();
 
-    void redrawScene();
+    void redrawMapPaths();
 
     void setMapperDbModel(QMapperDbModel* model);
 
@@ -30,7 +30,6 @@ public:
     void addMap(int src_idx, int dst_idx);
     void updateMapPaths();
     void removeMapPaths();
-
     //void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
 
 public Q_SLOTS:
@@ -39,6 +38,7 @@ public Q_SLOTS:
     void mouseDragged(QPointF pos); //not used any more
     void mouseDragged(QPointF src_pos, QPointF drag_pos);
     void devsigMoved();
+    void mouseDoubleClicked();
 
 private:
     //find index of item within square hitbox of certain length

@@ -39,6 +39,7 @@ Q_SIGNALS:
     void mouseDropSig(QPointF src_pos, QPointF drop_pos);
     void rectMovedSig();
     void mouseReleaseEvent(QPointF pos);
+    void mouseDoubleClickSig();
 
 protected:
 
