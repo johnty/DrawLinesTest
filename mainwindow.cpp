@@ -105,10 +105,24 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->graphicsView->setScene(mapperScene);
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-    //mapperScene->setSceneRect(ui->graphicsView->rect());
-    //mapperScene->setSceneRect(0, 0, ui->graphicsView->width(), ui->graphicsView->height());
     mapperScene->updateScene();
     qDebug() << "gview rect = " << ui->graphicsView->rect();
+
+
+    //try another view on top
+//    QGraphicsView * view2 = new QGraphicsView(this);
+
+//    view2->setFrameRect(ui->graphicsView->rect());
+
+//    view2->show();
+//    view2->setBackgroundBrush(QBrush(Qt::blue));
+//    QMapperDbScene *scene2 = new QMapperDbScene(this);
+//    QMapperDbModel *mod2 = new QMapperDbModel();
+//    scene2->setMapperDbModel(mod2);
+//    mod2->LoadFromTest();
+//    view2->setScene(scene2);
+//    scene2->updateScene();
+
 
     //ui->graphicsView->setMouseTracking(true);
 

@@ -1,11 +1,17 @@
 #include "qmapperdbscene.h"
 
-QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent)
+QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent), activeLayer(this)
 {
     dbModel = NULL;
     addItem(&tempPathItem);
     tempPathItem.setPen(QPen(Qt::red, 2));
+    //setForegroundBrush(QColor(255, 255, 255, 120));
+    addItem(activeLayer.getLayerItems());
+}
 
+QMapperDbScene::~QMapperDbScene()
+{
+    removeItem(activeLayer.getLayerItems());
 }
 
 void QMapperDbScene::mouseDoubleClicked()
@@ -26,12 +32,13 @@ void QMapperDbScene::mouseDropped(QPointF pos)
 }
 
 void QMapperDbScene::mouseDragged(QPointF pos)
-{
+{ //NOT USED
     tempPathItem.setVisible(true);
     qDebug() <<"dbScene dragged @ " << pos;
     mapPtDst = pos;
     mapPtDst.setY( mapPtDst.y());
     updateTempPath();
+
     //updateScene();
 }
 
@@ -57,6 +64,11 @@ void QMapperDbScene::mouseDropped(QPointF src, QPointF dst)
         if (srcIdx != dstIdx) // one more
             addMap(srcIdx, dstIdx);
     }
+
+
+    //new method using layers:
+    activeLayer.setAllHovered(false);
+    activeLayer.addMap(srcIdx, dstIdx);
 
 
 }
@@ -89,6 +101,12 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
     int hoverIdx = getIndexOfSigNear(mapPtDst, 10);
 
     //and if so, set it to render with selected graphic
+
+    //new:
+    activeLayer.setAllHovered(false);
+    activeLayer.setTempHover(srcIdx, hoverIdx);
+
+    //old:
     for (int i=0; i<sigs.size(); ++i)
     {
         if ((i == hoverIdx) && (srcIdx != hoverIdx))
@@ -121,6 +139,7 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
 
     //draw map path
     updateTempPath();
+    activeLayer.updateTempPath();
 
     //updateScene();
 }
@@ -131,6 +150,9 @@ void QMapperDbScene::addMap(int src_idx, int dst_idx)
     mapDstIdxs.push_back(dst_idx);
     qDebug() <<"added map from" <<src_idx << " to " << dst_idx;
     updateMapPaths();
+
+    //new:
+    activeLayer.addMap(src_idx, dst_idx);
 }
 
 void QMapperDbScene::updateTempPath()
@@ -144,6 +166,8 @@ void QMapperDbScene::updateTempPath()
     //addPath(tempPath);
     tempPathItem.setPath(tempPath);
 
+
+
 }
 
 void QMapperDbScene::updateMapPaths()
@@ -151,6 +175,7 @@ void QMapperDbScene::updateMapPaths()
     //todo: don't need to store these explicitly
     mapSrcs.clear();
     mapDsts.clear();
+
     for (int i=0; i < mapSrcIdxs.size(); ++i)
     {
         int src_idx = mapSrcIdxs.at(i);
@@ -201,6 +226,15 @@ void QMapperDbScene::redrawMapPaths()
 
 void QMapperDbScene::updateScene()
 {
+    activeLayer.setMapperDbModel(dbModel);
+    activeLayer.updateLayer();
+
+    removeItem(activeLayer.getLayerItems());
+
+    //return;
+
+    //old method, no layer management with just one
+    // set of drawings for the entire scene:
     if (dbModel != NULL)
     {
         qDebug() <<"reinit scene from dbModel...";
@@ -213,10 +247,7 @@ void QMapperDbScene::updateScene()
             sigs.pop_back();
         }
 
-
         removeMapPaths();
-
-
 
         removeItem(&tempPathItem);//note: find way to avoid this bit
         clear();
@@ -224,6 +255,8 @@ void QMapperDbScene::updateScene()
         //add stuff back
         addItem(&tempPathItem);
         sigs.clear();
+
+        addItem(activeLayer.getLayerItems());
 
         int inputOffsetY = 0;
         int outputOffsetY = 0;
@@ -234,7 +267,7 @@ void QMapperDbScene::updateScene()
             CustomRect * sigrect;
             int offsetY;
             int offsetX;
-            if (dbModel->isOutputSig(i))\
+            if (dbModel->isOutputSig(i))
             {
                 offsetX = 0;
                 outputOffsetY += MAPPER_SCENE_ITEM_H + MAPPER_SCENE_SPACER;
@@ -261,6 +294,7 @@ void QMapperDbScene::updateScene()
         }
 
         updateMapPaths();
+        updateTempPath();
         //updateMaps();
 
     }
@@ -269,6 +303,7 @@ void QMapperDbScene::updateScene()
 void QMapperDbScene::setMapperDbModel(QMapperDbModel* model)
 {
     dbModel = model;
+    activeLayer.setMapperDbModel(model);
 }
 
 int QMapperDbScene::getIndexOfSigNear(QPointF pos, float len)
@@ -293,4 +328,10 @@ void QMapperDbScene::devsigMoved()
 {
     qDebug () <<" need to redraw!";
     redrawMapPaths();
+    activeLayer.redrawMapPaths();
+}
+
+void QMapperDbScene::setAlpha(int alpha)
+{
+    setForegroundBrush(QColor(255, 255, 255, alpha));
 }

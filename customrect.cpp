@@ -13,6 +13,7 @@ CustomRect::CustomRect(float x, float y, QString dev, QString sig)// QMapperDbSc
     pressed = false;
     lifted = false;
     hoverovered = false;
+    setParentItem(0);
 }
 
 void CustomRect::setTitles(QString dev, QString sig) {
@@ -44,7 +45,7 @@ void CustomRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->fillRect(rect,brush);
     painter->drawRect(rect);
 
-    painter->setPen(Qt::black);
+    painter->setPen(Qt::blue);
     QString text = devname + "/" + signame;
     rect.moveTo(2,2);
     painter->drawText(rect, text);

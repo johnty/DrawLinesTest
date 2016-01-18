@@ -7,9 +7,7 @@
 #include <QDebug>
 #include "qmapperdbmodel.h"
 #include "customrect.h"
-
-#define MAPPER_SCENE_CURVE  25
-
+#include "qmapperscenelayer.h"
 
 class QMapperDbScene : public QGraphicsScene
 {
@@ -18,6 +16,7 @@ class QMapperDbScene : public QGraphicsScene
 public:
 
     QMapperDbScene(QObject *parent);
+    ~QMapperDbScene();
 
     void updateScene();
 
@@ -31,6 +30,8 @@ public:
     void updateMapPaths();
     void removeMapPaths();
     //void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
+
+    void setAlpha(int alpha);
 
 public Q_SLOTS:
     void mouseDropped(QPointF pos); //not used any more
@@ -55,13 +56,14 @@ private:
     QPointF mapPtSrc;
     QPointF mapPtDst;
 
-
     std::vector<QGraphicsPathItem*> mapPathItems;
     std::vector<QPointF> mapSrcs;
     std::vector<QPointF> mapDsts;
 
     std::vector<int> mapSrcIdxs;
     std::vector<int> mapDstIdxs;
+
+    QMapperSceneLayer activeLayer;
 
 };
 #endif // QMAPPERDBSCENE_H

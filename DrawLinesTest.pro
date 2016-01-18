@@ -17,12 +17,14 @@ SOURCES += main.cpp\
     listviewarrows.cpp \
     qmapperdbmodel.cpp \
     customrect.cpp \
-    qmapperdbscene.cpp
+    qmapperdbscene.cpp \
+    qmapperscenelayer.cpp
 
 HEADERS  += mainwindow.h \
     listviewarrows.h \
     qmapperdbmodel.h \
     customrect.h \
-    qmapperdbscene.h
+    qmapperdbscene.h \
+    qmapperscenelayer.h
 
 FORMS    += mainwindow.ui
