@@ -21,9 +21,15 @@ public:
 
     void updateScene();
 
+    void redrawScene();
+
     void setMapperDbModel(QMapperDbModel* model);
 
-    void updateMaps();
+    void updateTempPath();
+
+    void addMap(int src_idx, int dst_idx);
+    void updateMapPaths();
+    void removeMapPaths();
 
     //void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
 
@@ -32,6 +38,7 @@ public Q_SLOTS:
     void mouseDropped(QPointF src_pos, QPointF drop_pos);
     void mouseDragged(QPointF pos); //not used any more
     void mouseDragged(QPointF src_pos, QPointF drag_pos);
+    void devsigMoved();
 
 private:
     //find index of item within square hitbox of certain length
@@ -41,15 +48,20 @@ private:
 
     QMapperDbModel *dbModel;
     std::vector<CustomRect*> sigs;
-    std::vector<QGraphicsPathItem*> maps;
+
     QGraphicsPathItem tempPathItem;
     QPainterPath tempPath;
 
     QPointF mapPtSrc;
     QPointF mapPtDst;
 
+
+    std::vector<QGraphicsPathItem*> mapPathItems;
     std::vector<QPointF> mapSrcs;
     std::vector<QPointF> mapDsts;
+
+    std::vector<int> mapSrcIdxs;
+    std::vector<int> mapDstIdxs;
 
 };
 #endif // QMAPPERDBSCENE_H

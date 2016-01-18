@@ -109,6 +109,7 @@ void CustomRect::mouseMoveEvent(QGraphicsSceneMouseEvent *e) {
         QPointF diff = e->lastPos() - e->pos();
         this->setPos(this->pos() - diff);
 
+        Q_EMIT rectMovedSig();
         update();
     }
 

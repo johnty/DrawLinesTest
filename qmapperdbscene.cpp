@@ -3,16 +3,8 @@
 QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent)
 {
     dbModel = NULL;
-
-    tempPath.moveTo(0,32);
-    tempPath.lineTo(100, 100);
-
-    tempPathItem.setPath(tempPath);
-    tempPathItem.setPen(QPen(Qt::red, 2));
-    //tempPathItem.setBrush(QBrush(Qt::red));
-    tempPathItem.setVisible(false);
     addItem(&tempPathItem);
-
+    tempPathItem.setPen(QPen(Qt::red, 2));
 
 }
 
@@ -33,18 +25,32 @@ void QMapperDbScene::mouseDragged(QPointF pos)
     qDebug() <<"dbScene dragged @ " << pos;
     mapPtDst = pos;
     mapPtDst.setY( mapPtDst.y());
-    updateMaps();
+    updateTempPath();
     //updateScene();
 }
 
 void QMapperDbScene::mouseDropped(QPointF src, QPointF dst)
 {
     qDebug() <<"dbScene DROP from " << src <<" to " << dst;
+
+    //undo hovered render on all
     for (int i=0; i<sigs.size(); ++i)
     {
         sigs.at(i)->setHovered(false);
     }
     tempPathItem.setVisible(false);
+
+    QPointF dst_mod(dst.x()+src.x(), dst.y()+src.y());
+
+
+    int srcIdx = getIndexOfSigNear(src, 10);
+    int dstIdx = getIndexOfSigNear(dst_mod, 10);
+    qDebug() << "make map from " << srcIdx <<" to " <<dstIdx;
+    if ( (srcIdx != -1) && (dstIdx != -1) )
+    {
+        if (srcIdx != dstIdx) // one more
+            addMap(srcIdx, dstIdx);
+    }
 
 
 }
@@ -64,11 +70,12 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
 
     mapPtSrc.setY(mapPtSrc.y());
     mapPtDst = dst;
-    mapPtDst.setY( mapPtDst.y() +src.y());
+    mapPtDst.setY( mapPtDst.y() +src.y()); //SEE TODO BELOW
     mapPtDst.setX( mapPtDst.x() +src.x());
 
     //find index of source object in list
 
+    //note this is the "modified" point!
     int srcIdx = getIndexOfSigNear(mapPtSrc, 10);
 
     //then, check if we've moved over an item...
@@ -90,6 +97,9 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
             // TODO: this potentially motivates the child objects (CustomRect)
             // to hold onto an external index? this way we can simply emit
             // the src and dst object indicies...
+            // THE MORE I THINK ABOUT IT THE MORE THIS MAKES SENSE
+            //     (e.g. stupid hacks for relative mouse move/drag positions
+            //       of child objects betwen source/destination, as above...)
             sigs.at(i)->setHovered(false);
         }
     }
@@ -104,32 +114,96 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
     }
 
     //draw map path
-    updateMaps();
+    updateTempPath();
 
     //updateScene();
 }
 
-void QMapperDbScene::updateMaps()
+void QMapperDbScene::addMap(int src_idx, int dst_idx)
+{
+    mapSrcIdxs.push_back(src_idx);
+    mapDstIdxs.push_back(dst_idx);
+    qDebug() <<"added map from" <<src_idx << " to " << dst_idx;
+    updateMapPaths();
+}
+
+void QMapperDbScene::updateTempPath()
 {
     //temporary line (while dragging)
-    tempPath = QPainterPath();
+
+    QPainterPath tempPath;
     tempPath.moveTo(mapPtSrc);
     tempPath.cubicTo(mapPtSrc.x()+MAPPER_SCENE_CURVE, mapPtSrc.y(), mapPtDst.x()-MAPPER_SCENE_CURVE, mapPtDst.y(), mapPtDst.x(), mapPtDst.y());
     //tempPath.lineTo(mapPtDst);
+    //addPath(tempPath);
     tempPathItem.setPath(tempPath);
 
+}
+
+void QMapperDbScene::updateMapPaths()
+{
+    //todo: don't need to store these explicitly
+    mapSrcs.clear();
+    mapDsts.clear();
+    for (int i=0; i < mapSrcIdxs.size(); ++i)
+    {
+        int src_idx = mapSrcIdxs.at(i);
+        int dst_idx = mapDstIdxs.at(i);
+        QPointF src_pt( (sigs.at(src_idx)->boundingRectAbs().right()),
+                                (sigs.at(src_idx)->boundingRectAbs().top() + MAPPER_SCENE_ITEM_H/2));
+        QPointF dst_pt( (sigs.at(dst_idx)->boundingRectAbs().left()),
+                        (sigs.at(dst_idx)->boundingRectAbs().top() + MAPPER_SCENE_ITEM_H/2));
+
+        mapSrcs.push_back(src_pt);
+        mapDsts.push_back(dst_pt);
+    }
 
     //maps list
+    for (int i=0; i<mapSrcs.size(); ++i) //no bounds checking at all yet...
+    {
+        QGraphicsPathItem* pathItem = new QGraphicsPathItem();
+        QPainterPath path;
+        path.moveTo(mapSrcs.at(i));
+        //todo: use the PointF version which looks much neater...
+        path.cubicTo(mapSrcs.at(i).x()+MAPPER_SCENE_CURVE, mapSrcs.at(i).y(), mapDsts.at(i).x()-MAPPER_SCENE_CURVE, mapDsts.at(i).y(), mapDsts.at(i).x(), mapDsts.at(i).y());
 
+        pathItem->setPath(path);
+        mapPathItems.push_back(pathItem);
+        addItem(pathItem);
+    }
+}
+
+void QMapperDbScene::removeMapPaths()
+{
+    for (int i=0; i<mapPathItems.size(); ++i)
+    {
+        removeItem(mapPathItems.at(i));
+    }
+    while (mapPathItems.size())
+    {
+        QGraphicsItem* item = mapPathItems.at(mapPathItems.size()-1);
+        delete item;
+        mapPathItems.pop_back();
+    }
+}
+
+void QMapperDbScene::redrawScene()
+{
+    removeMapPaths();
+
+    updateMapPaths();
 }
 
 void QMapperDbScene::updateScene()
 {
     if (dbModel != NULL)
     {
+        //TODO: remove and remake signal rects!
 
-        removeItem(&tempPathItem);
+
+        removeItem(&tempPathItem);//note: find way to avoid this bit
         clear();
+        addItem(&tempPathItem);
         sigs.clear();
 
         int inputOffsetY = 0;
@@ -158,11 +232,11 @@ void QMapperDbScene::updateScene()
             QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF, QPointF)), this, SLOT(mouseDragged(QPointF, QPointF)));
             //QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF)), this, SLOT(mouseDropped(QPointF)));
             QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF, QPointF)), this, SLOT(mouseDropped(QPointF, QPointF)));
-            QObject::connect(sigrect, SIGNAL(mousePressSig()), this, SLOT(mousePressed()));
+            //QObject::connect(sigrect, SIGNAL(mousePressSig()), this, SLOT(mousePressed()));
+            QObject::connect(sigrect, SIGNAL(rectMovedSig()), this, SLOT(devsigMoved()));
             sigs.push_back(sigrect);
             addItem(sigrect);
         }
-        addItem(&tempPathItem);
 
         //updateMaps();
 
@@ -190,4 +264,10 @@ int QMapperDbScene::getIndexOfSigNear(QPointF pos, float len)
 
     }
     return foundIdx;
+}
+
+void QMapperDbScene::devsigMoved()
+{
+    qDebug () <<" need to redraw!";
+    redrawScene();
 }
