@@ -18,7 +18,9 @@ QMapperDbScene::~QMapperDbScene()
 void QMapperDbScene::mouseDoubleClicked()
 {
     qDebug() <<"dbl";
-    updateScene();
+    activeLayer.setVisible(!activeLayer.getIsVisible());
+    update();
+    //updateScene();
 }
 
 //void QMapperDbScene::mouseMoveEvent(QGraphicsSceneMouseEvent *e)
@@ -62,22 +64,24 @@ void QMapperDbScene::mouseDropped(QPointF src, QPointF dst)
     qDebug() << "make map from " << srcIdx <<" to " <<dstIdx;
     if ( (srcIdx != -1) & (dstIdx != -1) )
     {
-        if (srcIdx != dstIdx) // one more
+        if (srcIdx != dstIdx) {// one more
             addMap(srcIdx, dstIdx);
+
+            //IF WE WANT TO APPLY ANOTHER LAYER, do this:
             activeLayer.addMap(srcIdx, dstIdx);
+        }
     }
-
-
     //new method using layers:
-    activeLayer.setAllHovered(false);
-
-
-
+    // (actually other layers are passive, so we'd never do it. but if we ever did...)
+    //activeLayer.setAllHovered(false);
 }
 
 void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
 {
     //soooo ... many... hacks....
+
+    //Note: lets not do this to other layers, except to "working" layer
+    // that interacts with UI.
 
     tempPathItem.setVisible(true);
     qDebug() <<"dbScene DRAG from " << src <<" to " << dst;
@@ -104,9 +108,9 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
 
     //and if so, set it to render with selected graphic
 
-    //new:
-    activeLayer.setAllHovered(false);
-    activeLayer.setTempHover(srcIdx, hoverIdx);
+    //IF WE WANT TO APPLY ANOTHER LAYER, do this:
+    //activeLayer.setAllHovered(false);
+    //activeLayer.setTempHover(srcIdx, hoverIdx);
 
     //old:
     for (int i=0; i<sigs.size(); ++i)
@@ -141,7 +145,9 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
 
     //draw map path
     updateTempPath();
-    activeLayer.updateTempPath();
+
+    //IF WE WANT TO APPLY ANOTHER LAYER, do this:
+    //activeLayer.updateTempPath();
 
     //updateScene();
 }
@@ -283,6 +289,9 @@ void QMapperDbScene::updateScene()
                 offsetY = inputOffsetY;
             }
             sigrect = new CustomRect(offsetX, offsetY, devname, signame);
+
+            sigrect->setFillColour(QColor(128, 128, 0, 128));
+
             //QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF)), this, SLOT(mouseDragged(QPointF)));
             QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF, QPointF)), this, SLOT(mouseDragged(QPointF, QPointF)));
             //QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF)), this, SLOT(mouseDropped(QPointF)));

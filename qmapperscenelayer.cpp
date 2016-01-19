@@ -6,6 +6,8 @@ QMapperSceneLayer::QMapperSceneLayer(QGraphicsScene *parent)
     dbModel = NULL;
     tempPathItem = new QGraphicsPathItem();
     tempPathItem->setVisible(false);
+
+    isVisible = true;
 }
 QMapperSceneLayer::~QMapperSceneLayer()
 {
@@ -198,4 +200,19 @@ void QMapperSceneLayer::setTempHover(int src_idx, int dst_idx)
             break;
         }
     }
+}
+
+void QMapperSceneLayer::setRectColour(QColor col)
+{
+    myRectColour = col;
+    for (int i=0; i<sigs.size(); ++i)
+    {
+
+    }
+}
+
+void QMapperSceneLayer::setVisible(bool visible)
+{
+    isVisible = visible;
+    myGraphicsItems.setVisible(isVisible);
 }

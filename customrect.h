@@ -31,6 +31,11 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
+    void setFillColour(QColor col) {colorFill = col;}
+    void setOutlineColDef(QColor col) {colorOutlineDef = col;}
+    void setOutlineColSel(QColor col) {colorOutlineSel = col;}
+    void setOutlineColDrop(QColor col) {colorOutlineDrop = col;}
+
 Q_SIGNALS:
 
     void mouseDragSig(QPointF pos);
@@ -62,6 +67,11 @@ private:
     QString signame;
     float originX;
     float originY;
+
+    QColor colorFill;
+    QColor colorOutlineDef;
+    QColor colorOutlineSel;
+    QColor colorOutlineDrop;
 
     //QMapperDbScene *parentScene;
 

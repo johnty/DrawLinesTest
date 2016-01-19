@@ -33,6 +33,11 @@ public:
 
     QGraphicsItemGroup* getLayerItems() {return &myGraphicsItems;}
 
+    void setRectColour(QColor col);
+
+    void setVisible(bool visible);
+    bool getIsVisible() {return isVisible;}
+
 private:
 
     QMapperDbModel *dbModel;
@@ -53,6 +58,10 @@ private:
 
     QGraphicsItemGroup myGraphicsItems;
     QGraphicsScene* myParentScene;
+
+    QColor myRectColour;
+
+    bool isVisible;
 };
 
 #endif // QMAPPERSCENELAYER_H
