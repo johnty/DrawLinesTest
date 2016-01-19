@@ -5,11 +5,11 @@ QMapperSceneLayer::QMapperSceneLayer(QGraphicsScene *parent)
     myParentScene = parent;
     dbModel = NULL;
     tempPathItem = new QGraphicsPathItem();
+    tempPathItem->setVisible(false);
 }
 QMapperSceneLayer::~QMapperSceneLayer()
 {
     removeSigRects();
-
     removeMapPaths();
 
 }
@@ -20,7 +20,6 @@ void QMapperSceneLayer::updateLayer()
     if (dbModel != NULL)
     {
         qDebug() <<"updateLayer from dbModel...";
-
 
         //
         //remove stuff
@@ -37,6 +36,7 @@ void QMapperSceneLayer::updateLayer()
         //
         tempPathItem = new QGraphicsPathItem();
         myGraphicsItems.addToGroup(tempPathItem);
+        tempPathItem->setVisible(false);
         //addItem(&tempPathItem);
 
 

@@ -6,7 +6,8 @@ QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent), active
     addItem(&tempPathItem);
     tempPathItem.setPen(QPen(Qt::red, 2));
     //setForegroundBrush(QColor(255, 255, 255, 120));
-    addItem(activeLayer.getLayerItems());
+    //addItem(activeLayer.getLayerItems());
+    tempPathItem.setVisible(false);
 }
 
 QMapperDbScene::~QMapperDbScene()
@@ -59,16 +60,17 @@ void QMapperDbScene::mouseDropped(QPointF src, QPointF dst)
     int srcIdx = getIndexOfSigNear(src, 10);
     int dstIdx = getIndexOfSigNear(dst_mod, 10);
     qDebug() << "make map from " << srcIdx <<" to " <<dstIdx;
-    if ( (srcIdx != -1) && (dstIdx != -1) )
+    if ( (srcIdx != -1) & (dstIdx != -1) )
     {
         if (srcIdx != dstIdx) // one more
             addMap(srcIdx, dstIdx);
+            activeLayer.addMap(srcIdx, dstIdx);
     }
 
 
     //new method using layers:
     activeLayer.setAllHovered(false);
-    activeLayer.addMap(srcIdx, dstIdx);
+
 
 
 }
@@ -254,6 +256,7 @@ void QMapperDbScene::updateScene()
 
         //add stuff back
         addItem(&tempPathItem);
+        tempPathItem.setVisible(false);
         sigs.clear();
 
         addItem(activeLayer.getLayerItems());
