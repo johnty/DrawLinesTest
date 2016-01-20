@@ -29,6 +29,7 @@ private slots:
 private:
     QMapperDbScene * mapperScene;
     QMapperDbModel * dbModel;
+    QMapperDbModel * dbModelActive;
     QStandardItemModel listSrcTree;
     QStandardItemModel listDstTree;
     QStandardItemModel listArrows;

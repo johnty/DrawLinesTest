@@ -1,13 +1,13 @@
 #include "qmapperscenelayer.h"
 
-QMapperSceneLayer::QMapperSceneLayer(QGraphicsScene *parent)
+QMapperSceneLayer::QMapperSceneLayer(QGraphicsScene *parent, int offset)
 {
     myParentScene = parent;
     dbModel = NULL;
     tempPathItem = new QGraphicsPathItem();
     tempPathItem->setVisible(false);
-
     isVisible = true;
+    myOffset = offset;
 }
 QMapperSceneLayer::~QMapperSceneLayer()
 {
@@ -64,7 +64,7 @@ void QMapperSceneLayer::updateLayer()
                 inputOffsetY += MAPPER_SCENE_ITEM_H + MAPPER_SCENE_SPACER;
                 offsetY = inputOffsetY;
             }
-            sigrect = new CustomRect(offsetX, offsetY, devname, signame);
+            sigrect = new CustomRect(offsetX + myOffset, offsetY+myOffset, devname, signame);
             //QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF)), this, SLOT(mouseDragged(QPointF)));
             QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF, QPointF)), myParentScene, SLOT(mouseDragged(QPointF, QPointF)));
             //QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF)), this, SLOT(mouseDropped(QPointF)));
@@ -75,14 +75,18 @@ void QMapperSceneLayer::updateLayer()
             sigs.push_back(sigrect);
             //addItem(sigrect); //scene
             myGraphicsItems.addToGroup(sigrect);
-
-            //load the map objects
         }
+
+        //load the map objects
+        for (int i=0; i<dbModel->getMapSrcs().size(); ++i)
+        {
+            addMap(dbModel->getMapSrcs().at(i), dbModel->getMapDsts().at(i));
+        }
+
 
         updateMapPaths();
         updateTempPath();
         //updateMaps();
-
     }
 }
 
@@ -114,7 +118,7 @@ void QMapperSceneLayer::addMap(int src_idx, int dst_idx)
 {
     mapSrcIdxs.push_back(src_idx);
     mapDstIdxs.push_back(dst_idx);
-    qDebug() <<"added map from" <<src_idx << " to " << dst_idx;
+    qDebug() <<"Layer added map from" <<src_idx << " to " << dst_idx;
     updateMapPaths();
 }
 
@@ -132,6 +136,9 @@ void QMapperSceneLayer::updateMapPaths()
         QPointF dst_pt( (sigs.at(dst_idx)->boundingRectAbs().left()),
                         (sigs.at(dst_idx)->boundingRectAbs().top() + MAPPER_SCENE_ITEM_H/2));
 
+
+        //src_pt.operator +=(QPoint(myOffset,myOffset));
+        //dst_pt.operator +=(QPoint(myOffset,myOffset));
         mapSrcs.push_back(src_pt);
         mapDsts.push_back(dst_pt);
     }
@@ -146,8 +153,11 @@ void QMapperSceneLayer::updateMapPaths()
         path.cubicTo(mapSrcs.at(i).x()+MAPPER_SCENE_CURVE, mapSrcs.at(i).y(), mapDsts.at(i).x()-MAPPER_SCENE_CURVE, mapDsts.at(i).y(), mapDsts.at(i).x(), mapDsts.at(i).y());
 
         pathItem->setPath(path);
+        pathItem->setPen(QPen(myRectColour, 2));
+        //pathItem->setBrush(QBrush(myRectColour));
         mapPathItems.push_back(pathItem);
         //addItem(pathItem); //scene
+
         myGraphicsItems.addToGroup(pathItem);
     }
 }
@@ -207,7 +217,7 @@ void QMapperSceneLayer::setRectColour(QColor col)
     myRectColour = col;
     for (int i=0; i<sigs.size(); ++i)
     {
-
+        sigs.at(i)->setFillColor(myRectColour);
     }
 }
 
@@ -215,4 +225,25 @@ void QMapperSceneLayer::setVisible(bool visible)
 {
     isVisible = visible;
     myGraphicsItems.setVisible(isVisible);
+}
+void QMapperSceneLayer::setAlpha(int alpha)
+{
+    myAlpha = alpha;
+
+    for (int i=0; i<sigs.size(); ++i)
+    {
+        sigs.at(i)->setAlpha(alpha);
+    }
+}
+void QMapperSceneLayer::setDrawText(bool draw)
+{
+    for (int i=0; i<sigs.size(); ++i)
+    {
+        QColor col;
+        if (draw)
+            col = QColor(Qt::red);
+        else
+            col = QColor(255, 255, 255, 0);
+        sigs.at(i)->setTextColor(col);
+    }
 }

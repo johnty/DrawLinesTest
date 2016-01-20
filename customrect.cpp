@@ -16,6 +16,7 @@ CustomRect::CustomRect(float x, float y, QString dev, QString sig)// QMapperDbSc
     setParentItem(0);
 
     colorFill = Qt::gray;
+    colorText = Qt::blue;
 }
 
 void CustomRect::setTitles(QString dev, QString sig) {
@@ -47,7 +48,7 @@ void CustomRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     painter->fillRect(rect,brush);
     painter->drawRect(rect);
 
-    painter->setPen(Qt::blue);
+    painter->setPen(colorText);
     QString text = devname + "/" + signame;
     rect.moveTo(2,2);
     painter->drawText(rect, text);
@@ -136,4 +137,10 @@ QVariant CustomRect::itemChange(GraphicsItemChange change, const QVariant &value
         qDebug() << "X = " << originX << " Y = " << originY;
     }
     return QGraphicsItem::itemChange(change, value);
+}
+
+void CustomRect::setAlpha(int alpha)
+{
+    colorFill.setAlpha(alpha);
+    colorOutlineDef.setAlpha(alpha);
 }

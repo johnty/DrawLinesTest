@@ -102,6 +102,12 @@ MainWindow::MainWindow(QWidget *parent) :
     dbModel = new QMapperDbModel();
     mapperScene->setMapperDbModel(dbModel);
     dbModel->LoadFromTest();
+
+    //this is another model we might want to overlay on top of existing:
+    dbModelActive = new QMapperDbModel();
+    dbModelActive->LoadFromTest(1);
+    mapperScene->setMapperDbModelActive(dbModelActive);
+
     ui->graphicsView->setScene(mapperScene);
     ui->graphicsView->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
     ui->graphicsView->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOff);

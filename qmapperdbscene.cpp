@@ -1,11 +1,10 @@
 #include "qmapperdbscene.h"
 
-QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent), activeLayer(this)
+QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent), activeLayer(this, 5)
 {
     dbModel = NULL;
     addItem(&tempPathItem);
     tempPathItem.setPen(QPen(Qt::red, 2));
-    //setForegroundBrush(QColor(255, 255, 255, 120));
     //addItem(activeLayer.getLayerItems());
     tempPathItem.setVisible(false);
 }
@@ -156,11 +155,11 @@ void QMapperDbScene::addMap(int src_idx, int dst_idx)
 {
     mapSrcIdxs.push_back(src_idx);
     mapDstIdxs.push_back(dst_idx);
-    qDebug() <<"added map from" <<src_idx << " to " << dst_idx;
+    qDebug() <<"Main Scene added map from" <<src_idx << " to " << dst_idx;
     updateMapPaths();
 
-    //new:
-    activeLayer.addMap(src_idx, dst_idx);
+    //if we want to add to other layer:
+    //activeLayer.addMap(src_idx, dst_idx);
 }
 
 void QMapperDbScene::updateTempPath()
@@ -234,18 +233,24 @@ void QMapperDbScene::redrawMapPaths()
 
 void QMapperDbScene::updateScene()
 {
-    activeLayer.setMapperDbModel(dbModel);
-    activeLayer.updateLayer();
+    //note: in the current implementation we need to remove
+    // owned child items explicitly which release ownership
+    // of the items from the scene; otherwise we have issues on exit.
+    // should fix this by reworking the class composition...
 
+    //also, once the children are put in a group, for some reason
+    // the UI signals don't get connected which explains why for now we
+    // have almost identical code in this class and the scenelayer class
+    // for updating of the scene... ideally a single class should suffice...
+
+    // activeLayer.setMapperDbModel(dbModel);
+    activeLayer.updateLayer();
     removeItem(activeLayer.getLayerItems());
 
-    //return;
-
-    //old method, no layer management with just one
     // set of drawings for the entire scene:
     if (dbModel != NULL)
     {
-        qDebug() <<"reinit scene from dbModel...";
+        //qDebug() <<"reinit scene from dbModel...";
 
         //remove stuff
         while (sigs.size())
@@ -254,18 +259,25 @@ void QMapperDbScene::updateScene()
             delete sigs.at(sigs.size()-1);
             sigs.pop_back();
         }
-
         removeMapPaths();
-
         removeItem(&tempPathItem);//note: find way to avoid this bit
-        clear();
+        clear(); //probably won't need this since we've manually removed everything...
 
         //add stuff back
+
+        activeLayer.getLayerItems()->setZValue(MAPPER_SCENE_MIDDLE_LAYER);
+        activeLayer.setOffset(15);
+        activeLayer.setDrawText(false);
+        QColor activeLayerCol(200, 200, 0);
+        activeLayer.setRectColour(activeLayerCol);
+        activeLayer.setAlpha(100);
+        addItem(activeLayer.getLayerItems());
+
         addItem(&tempPathItem);
         tempPathItem.setVisible(false);
         sigs.clear();
 
-        addItem(activeLayer.getLayerItems());
+
 
         int inputOffsetY = 0;
         int outputOffsetY = 0;
@@ -290,7 +302,7 @@ void QMapperDbScene::updateScene()
             }
             sigrect = new CustomRect(offsetX, offsetY, devname, signame);
 
-            sigrect->setFillColour(QColor(128, 128, 0, 128));
+            sigrect->setFillColor(QColor(128, 128, 128, 255));
 
             //QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF)), this, SLOT(mouseDragged(QPointF)));
             QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF, QPointF)), this, SLOT(mouseDragged(QPointF, QPointF)));
@@ -301,9 +313,17 @@ void QMapperDbScene::updateScene()
             QObject::connect(sigrect, SIGNAL(mouseDoubleClickSig()), this, SLOT(mouseDoubleClicked()));
             sigs.push_back(sigrect);
             addItem(sigrect);
+            sigrect->setZValue(MAPPER_SCENE_BOTTOM_LAYER);
 
-            //load the map objects
+
         }
+
+        //load the map objects
+        for (int i=0; i<dbModel->getMapSrcs().size(); ++i)
+        {
+            addMap(dbModel->getMapSrcs().at(i), dbModel->getMapDsts().at(i));
+        }
+
 
         updateMapPaths();
         updateTempPath();
@@ -315,6 +335,11 @@ void QMapperDbScene::updateScene()
 void QMapperDbScene::setMapperDbModel(QMapperDbModel* model)
 {
     dbModel = model;
+
+}
+
+void QMapperDbScene::setMapperDbModelActive(QMapperDbModel* model)
+{
     activeLayer.setMapperDbModel(model);
 }
 

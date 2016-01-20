@@ -9,6 +9,12 @@
 #include "customrect.h"
 #include "qmapperscenelayer.h"
 
+
+//for Z-order of objects
+#define MAPPER_SCENE_TOP_LAYER 30
+#define MAPPER_SCENE_MIDDLE_LAYER 20
+#define MAPPER_SCENE_BOTTOM_LAYER 10
+
 class QMapperDbScene : public QGraphicsScene
 {
     Q_OBJECT
@@ -23,6 +29,7 @@ public:
     void redrawMapPaths();
 
     void setMapperDbModel(QMapperDbModel* model);
+    void setMapperDbModelActive(QMapperDbModel* model);
 
     void updateTempPath();
 

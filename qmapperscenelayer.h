@@ -10,9 +10,10 @@
 class QMapperSceneLayer
 {
 public:
-    QMapperSceneLayer(QGraphicsScene* parent);
+    QMapperSceneLayer(QGraphicsScene* parent, int offset=0);
     ~QMapperSceneLayer();
 
+    void setOffset(int offset = 0) {myOffset = offset;}
     void updateLayer();
 
     void redrawMapPaths();
@@ -30,6 +31,8 @@ public:
     void setHovered(int rect_idx, bool is_hover);
     void setAllHovered(bool is_hover);
     void setTempHover(int src_idx, int dst_idx);
+    void setAlpha(int alpha);
+    void setDrawText(bool draw);
 
     QGraphicsItemGroup* getLayerItems() {return &myGraphicsItems;}
 
@@ -62,6 +65,8 @@ private:
     QColor myRectColour;
 
     bool isVisible;
+    int myAlpha;
+    int myOffset;
 };
 
 #endif // QMAPPERSCENELAYER_H

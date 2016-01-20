@@ -31,10 +31,12 @@ public:
 
     void paint(QPainter *painter, const QStyleOptionGraphicsItem *option, QWidget *widget);
 
-    void setFillColour(QColor col) {colorFill = col;}
+    void setFillColor(QColor col) {colorFill = col;}
     void setOutlineColDef(QColor col) {colorOutlineDef = col;}
     void setOutlineColSel(QColor col) {colorOutlineSel = col;}
     void setOutlineColDrop(QColor col) {colorOutlineDrop = col;}
+    void setTextColor(QColor col) { colorText = col;}
+    void setAlpha(int alpha);
 
 Q_SIGNALS:
 
@@ -72,6 +74,7 @@ private:
     QColor colorOutlineDef;
     QColor colorOutlineSel;
     QColor colorOutlineDrop;
+    QColor colorText;
 
     //QMapperDbScene *parentScene;
 
