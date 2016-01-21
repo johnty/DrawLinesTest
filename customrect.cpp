@@ -44,7 +44,7 @@ void CustomRect::paint(QPainter *painter, const QStyleOptionGraphicsItem *option
     if (hoverovered)
         pen.setColor(Qt::green);
 
-    painter->setPen(pen);
+    //painter->setPen(pen,)
     painter->fillRect(rect,brush);
     painter->drawRect(rect);
 

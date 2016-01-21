@@ -1,6 +1,6 @@
 #include "qmapperdbscene.h"
 
-QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent), activeLayer(this, 5)
+QMapperDbScene::QMapperDbScene(QObject *parent) : QGraphicsScene(parent), activeLayer(this, 3)
 {
     dbModel = NULL;
     addItem(&tempPathItem);
@@ -64,10 +64,10 @@ void QMapperDbScene::mouseDropped(QPointF src, QPointF dst)
     if ( (srcIdx != -1) & (dstIdx != -1) )
     {
         if (srcIdx != dstIdx) {// one more
-            addMap(srcIdx, dstIdx);
+            addMap(srcIdx, dstIdx, true);
 
             //IF WE WANT TO APPLY ANOTHER LAYER, do this:
-            activeLayer.addMap(srcIdx, dstIdx);
+            //activeLayer.addMap(srcIdx, dstIdx);
         }
     }
     //new method using layers:
@@ -151,15 +151,42 @@ void QMapperDbScene::mouseDragged(QPointF src, QPointF dst)
     //updateScene();
 }
 
-void QMapperDbScene::addMap(int src_idx, int dst_idx)
+void QMapperDbScene::addMap(int src_idx, int dst_idx, bool ifExistsRemove)
 {
-    mapSrcIdxs.push_back(src_idx);
-    mapDstIdxs.push_back(dst_idx);
-    qDebug() <<"Main Scene added map from" <<src_idx << " to " << dst_idx;
-    updateMapPaths();
+    int existingIdx = mapExists(src_idx, dst_idx);
+    if ( (ifExistsRemove) && ( existingIdx!= -1) ) {
+
+            qDebug() <<"removing existing map # " << existingIdx;
+            mapSrcIdxs.erase(mapSrcIdxs.begin()+existingIdx);
+            mapDstIdxs.erase(mapDstIdxs.begin()+existingIdx);
+
+    }
+    else {
+        mapSrcIdxs.push_back(src_idx);
+        mapDstIdxs.push_back(dst_idx);
+        qDebug() <<"Main Scene added map from" <<src_idx << " to " << dst_idx;
+    }
+
+    redrawMapPaths();
 
     //if we want to add to other layer:
     //activeLayer.addMap(src_idx, dst_idx);
+}
+
+int QMapperDbScene::mapExists(int src_idx, int dst_idx)
+{
+    int found_src = -1;
+    for (int i=0; i<mapSrcIdxs.size(); ++i)
+    {
+        if (mapSrcIdxs.at(i) == src_idx)
+        {
+            found_src = i;
+            if (mapDstIdxs.at(i) == dst_idx)
+                return i;
+        }
+    }
+    //not found
+    return -1;
 }
 
 void QMapperDbScene::updateTempPath()

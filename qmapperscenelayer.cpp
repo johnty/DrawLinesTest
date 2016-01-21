@@ -65,6 +65,7 @@ void QMapperSceneLayer::updateLayer()
                 offsetY = inputOffsetY;
             }
             sigrect = new CustomRect(offsetX + myOffset, offsetY+myOffset, devname, signame);
+            sigrect->setOutlineColDef(QColor(255, 255, 255, 0));
             //QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF)), this, SLOT(mouseDragged(QPointF)));
             QObject::connect(sigrect, SIGNAL(mouseDragSig(QPointF, QPointF)), myParentScene, SLOT(mouseDragged(QPointF, QPointF)));
             //QObject::connect(sigrect, SIGNAL(mouseDropSig(QPointF)), this, SLOT(mouseDropped(QPointF)));

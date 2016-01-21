@@ -33,7 +33,8 @@ public:
 
     void updateTempPath();
 
-    void addMap(int src_idx, int dst_idx);
+    void addMap(int src_idx, int dst_idx, bool ifExistsRemove = false);
+    int mapExists(int src_idx, int dst_idx);
     void updateMapPaths();
     void removeMapPaths();
     //void mouseMoveEvent(QGraphicsSceneMouseEvent *e);
@@ -57,16 +58,19 @@ private:
     QMapperDbModel *dbModel;
     std::vector<CustomRect*> sigs;
 
+    //draw items for temp line
     QGraphicsPathItem tempPathItem;
     QPainterPath tempPath;
-
     QPointF mapPtSrc;
     QPointF mapPtDst;
 
+
+    //draw items for map list
     std::vector<QGraphicsPathItem*> mapPathItems;
     std::vector<QPointF> mapSrcs;
     std::vector<QPointF> mapDsts;
 
+    //list of map src/dsts
     std::vector<int> mapSrcIdxs;
     std::vector<int> mapDstIdxs;
 
